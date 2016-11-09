@@ -13,7 +13,6 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.util.Property;
 
 /**
@@ -122,7 +121,6 @@ public class PlayDrawable extends Drawable {
 
     public void setProgress(float val) {
         mProgress = val;
-        Log.i("gavin", "progress is " + mProgress);
         invalidateSelf();
     }
 
