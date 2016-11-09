@@ -43,18 +43,19 @@ public class PlayDrawable extends Drawable {
     private final Path mRightBar = new Path();
     private final Paint mPaint = new Paint();
     private final RectF mBounds = new RectF();
-    private final float mPauseBarWidth;
-    private final float mPauseBarHeight;
-    private final float mPauseBarDistance;
+    private float mPauseBarWidth;
+    private float mPauseBarHeight;
+    private float mPauseBarDistance;
+
+    private final float BAR_WIDTH_RATE = 5.4f;
+    private final float BAR_HEIGHT_RATE = 1.8f;
+    private final float BAR_DISTANCE_RATE = 6.5f;
+
 
     public PlayDrawable(Context context) {
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
-
-        mPauseBarWidth = context.getResources().getDimension(R.dimen.play_button_pause_bar_width);
-        mPauseBarHeight = context.getResources().getDimension(R.dimen.play_button_pause_bar_height);
-        mPauseBarDistance = context.getResources().getDimension(R.dimen.play_button_pause_bar_distance);
     }
 
     @Override
@@ -130,6 +131,14 @@ public class PlayDrawable extends Drawable {
         mBounds.set(bounds);
         mWidth = mBounds.width();
         mHeight = mBounds.height();
+
+        float base;
+        if (mWidth <= mHeight) base = mWidth;
+        else base = mHeight;
+
+        mPauseBarWidth = base / BAR_WIDTH_RATE;
+        mPauseBarHeight = base / BAR_HEIGHT_RATE;
+        mPauseBarDistance = base / BAR_DISTANCE_RATE;
     }
 
     public Animator getPausePlayAnimator() {
