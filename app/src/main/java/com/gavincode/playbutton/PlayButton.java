@@ -88,8 +88,13 @@ public class PlayButton extends FrameLayout {
         return who == mPlayDrawable || super.verifyDrawable(who);
     }
 
+    @Override
+    public boolean performClick() {
+        toggle();
+        return super.performClick();
+    }
 
-    public void toggle() {
+    private void toggle() {
         if (mAnimatorSet != null) {
             mAnimatorSet.cancel();
         }
@@ -101,5 +106,4 @@ public class PlayButton extends FrameLayout {
         mAnimatorSet.playSequentially(pausePlayAnim);
         mAnimatorSet.start();
     }
-
 }

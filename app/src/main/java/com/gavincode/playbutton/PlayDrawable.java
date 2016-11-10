@@ -38,6 +38,9 @@ public class PlayDrawable extends Drawable {
     private float mProgress;
     private float mWidth;
     private float mHeight;
+    private float mPauseBarWidth;
+    private float mPauseBarHeight;
+    private float mPauseBarDistance;
 
     private final Path mLeftBar = new Path();
     private final Path mRightBar = new Path();
@@ -46,9 +49,6 @@ public class PlayDrawable extends Drawable {
     private final Paint mPaint = new Paint();
     private final Paint mStrokePaint = new Paint();
     private final RectF mBounds = new RectF();
-    private float mPauseBarWidth;
-    private float mPauseBarHeight;
-    private float mPauseBarDistance;
 
     private final float BAR_WIDTH_RATE = 5.4f;
     private final float BAR_HEIGHT_RATE = 1.8f;
