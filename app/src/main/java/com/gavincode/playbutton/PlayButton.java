@@ -2,17 +2,15 @@ package com.gavincode.playbutton;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Property;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.animation.DecelerateInterpolator;
@@ -23,19 +21,6 @@ import android.widget.FrameLayout;
  */
 
 public class PlayButton extends FrameLayout {
-
-    private static final Property<PlayButton, Integer> COLOR =
-            new Property<PlayButton, Integer>(Integer.class, "color") {
-                @Override
-                public Integer get(PlayButton v) {
-                    return v.getColor();
-                }
-
-                @Override
-                public void set(PlayButton v, Integer value) {
-                    v.setColor(value);
-                }
-            };
 
     private PlayDrawable mPlayDrawable;
     private final Paint mPaint = new Paint();
@@ -51,7 +36,19 @@ public class PlayButton extends FrameLayout {
         mPaint.setStyle(Paint.Style.FILL);
         mPlayDrawable = new PlayDrawable(context);
         mPlayDrawable.setCallback(this);
+        setClickable(true);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            setAttr();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void setAttr() {
+        int [] attrs = new int[] {android.R.attr.selectableItemBackground};
+        TypedArray ta = getContext().obtainStyledAttributes(attrs);
+        Drawable drawableFromTheme = ta.getDrawable(0);
+        ta.recycle();
+        setForeground(drawableFromTheme);
     }
 
     @Override
@@ -64,9 +61,6 @@ public class PlayButton extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        mPaint.setColor(getContext().getResources().getColor(android.R.color.black));
-        final float radius = Math.min(mWidth, mHeight) / 2f;
-        canvas.drawCircle(mWidth / 2f, mHeight / 2f, radius, mPaint);
         mPlayDrawable.draw(canvas);
     }
 
@@ -94,13 +88,6 @@ public class PlayButton extends FrameLayout {
         return who == mPlayDrawable || super.verifyDrawable(who);
     }
 
-    private int getColor() {
-        return getContext().getResources().getColor(android.R.color.black);
-    }
-
-    private void setColor(int color) {
-
-    }
 
     public void toggle() {
         if (mAnimatorSet != null) {
@@ -108,12 +95,10 @@ public class PlayButton extends FrameLayout {
         }
 
         mAnimatorSet = new AnimatorSet();
-        final ObjectAnimator colorAnim = ObjectAnimator.ofInt(this, COLOR, getContext().getResources().getColor(android.R.color.black));
-        colorAnim.setEvaluator(new ArgbEvaluator());
         final Animator pausePlayAnim = mPlayDrawable.getPausePlayAnimator();
         mAnimatorSet.setInterpolator(new DecelerateInterpolator());
         mAnimatorSet.setDuration(200);
-        mAnimatorSet.playTogether(colorAnim, pausePlayAnim);
+        mAnimatorSet.playSequentially(pausePlayAnim);
         mAnimatorSet.start();
     }
 

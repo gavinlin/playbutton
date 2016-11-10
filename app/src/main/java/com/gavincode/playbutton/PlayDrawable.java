@@ -41,7 +41,10 @@ public class PlayDrawable extends Drawable {
 
     private final Path mLeftBar = new Path();
     private final Path mRightBar = new Path();
+    private final Path mRightStroke = new Path();
+    private final Path mLeftStroke = new Path();
     private final Paint mPaint = new Paint();
+    private final Paint mStrokePaint = new Paint();
     private final RectF mBounds = new RectF();
     private float mPauseBarWidth;
     private float mPauseBarHeight;
@@ -50,33 +53,41 @@ public class PlayDrawable extends Drawable {
     private final float BAR_WIDTH_RATE = 5.4f;
     private final float BAR_HEIGHT_RATE = 1.8f;
     private final float BAR_DISTANCE_RATE = 6.5f;
+    private final int STROKE_WIDTH = 2;
 
 
     public PlayDrawable(Context context) {
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
+        mStrokePaint.setStyle(Paint.Style.STROKE);
+        mStrokePaint.setStrokeWidth(STROKE_WIDTH);
+        mStrokePaint.setStrokeJoin(Paint.Join.ROUND);
+        mStrokePaint.setColor(context.getResources().getColor(R.color.lightgrey));
+
     }
 
     @Override
     public void draw(Canvas canvas) {
         mLeftBar.rewind();
         mRightBar.rewind();
+        mRightStroke.rewind();
+        mLeftStroke.rewind();
 
         final float barDist = lerp(mPauseBarDistance, 0, mProgress);
         final float barWidth = lerp(mPauseBarWidth, mPauseBarHeight / 2f, mProgress);
 
-        final float firstBarTopRight = lerp(0, -mPauseBarHeight/4, mProgress);
-        final float firstBarBottomRght = lerp(-mPauseBarHeight, -mPauseBarHeight/4*3, mProgress);
+        final float firstBarBottomRight = lerp(0, -mPauseBarHeight/4, mProgress);
+        final float firstBarTopRight = lerp(-mPauseBarHeight, -mPauseBarHeight/4*3, mProgress);
 
-        final float secondBarTopLeft = lerp(0, -mPauseBarHeight/4, mProgress);
-        final float secondBarBottomLeft = lerp(-mPauseBarHeight, -mPauseBarHeight/4*3, mProgress);
-        final float secondBarBottomRight = lerp(-mPauseBarHeight, -mPauseBarHeight/2, mProgress);
-        final float secondBarTopRight = lerp (0, -mPauseBarHeight/2, mProgress);
+        final float secondBarBottomLeft = lerp(0, -mPauseBarHeight/4, mProgress);
+        final float secondBarTopLeft = lerp(-mPauseBarHeight, -mPauseBarHeight/4*3, mProgress);
+        final float secondBarTopRight = lerp(-mPauseBarHeight, -mPauseBarHeight/2, mProgress);
+        final float secondBarBottomRight = lerp (0, -mPauseBarHeight/2, mProgress);
 
-        mLeftBar.moveTo(0, 0);
-        mLeftBar.lineTo(0, -mPauseBarHeight);
-        mLeftBar.lineTo(barWidth, firstBarBottomRght);
+        mLeftBar.moveTo(0, -mPauseBarHeight);
+        mLeftBar.lineTo(0, 0);
+        mLeftBar.lineTo(barWidth, firstBarBottomRight);
         mLeftBar.lineTo(barWidth, firstBarTopRight);
         mLeftBar.close();
 
@@ -86,6 +97,17 @@ public class PlayDrawable extends Drawable {
         mRightBar.lineTo(2 * barWidth + barDist, secondBarTopRight);
         mRightBar.close();
 
+        if (mProgress == 1) {
+            mLeftStroke.moveTo(barWidth, firstBarTopRight);
+            mLeftStroke.lineTo(0, -mPauseBarHeight );
+            mLeftStroke.lineTo(0, 0);
+            mLeftStroke.lineTo(barWidth, firstBarBottomRight);
+
+            mRightStroke.moveTo(barWidth + barDist, secondBarBottomLeft);
+            mRightStroke.lineTo(2 * barWidth + barDist, secondBarBottomRight);
+            mRightStroke.lineTo(barWidth + barDist, secondBarTopLeft);
+        }
+
         canvas.save();
 
         // Position the pause/play button in the center of the drawable's bounds.
@@ -93,6 +115,14 @@ public class PlayDrawable extends Drawable {
 
         canvas.drawPath(mLeftBar, mPaint);
         canvas.drawPath(mRightBar, mPaint);
+        if (mProgress == 1) {
+            canvas.drawPath(mLeftStroke, mStrokePaint);
+            canvas.drawPath(mRightStroke, mStrokePaint);
+        }
+        else {
+            canvas.drawPath(mRightBar, mStrokePaint);
+            canvas.drawPath(mLeftBar, mStrokePaint);
+        }
         canvas.restore();
     }
 
