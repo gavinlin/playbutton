@@ -1,7 +1,9 @@
-package com.gavincode.playbutton;
+package com.gavincode.playbuttonapp;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.gavincode.playbutton.PlayButton;
 
 public class MainActivity extends AppCompatActivity {
 
